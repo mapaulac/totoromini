@@ -1,0 +1,119 @@
+import processing.video.*;
+
+PImage photo;
+PImage frame1;
+PImage frame2;
+PImage frame3;
+PImage frame4;
+PImage frame5;
+PImage frame6;
+PImage frame7;
+PImage frame8;
+
+Capture video;
+color trackColor; 
+float locX, locY;
+float totoroXleft, totoroYleft;
+float totoroXright, totoroYright;
+
+
+void setup(){
+ size(1280,800);
+ video = new Capture(this, 1280,800,30);
+ video.start();
+ photo = loadImage("totoroneutral.png");
+ frame1 = loadImage("frame1.png");
+ frame2 = loadImage("frame2.png");
+ frame3 = loadImage("frame3.png");
+ frame4 = loadImage("frame4.png");
+ frame5 = loadImage("frame5.png");
+ frame6 = loadImage("frame6.png");
+ frame7 = loadImage("frame7.png");
+ frame8 = loadImage("frame8.png");
+}
+
+void draw(){
+ if (video.available()) {
+ video.read();
+ }
+ video.loadPixels();
+ float dist=500;
+ for (int y=0; y<height; y++) {
+ for (int x=0; x<width; x++) {
+ int loc = (video.width-x-1)+(y*width);
+ color pix=video.pixels[loc];
+ float r1=red(pix);
+ float g1=green(pix);
+ float b1=blue(pix);
+ 
+ float r2=red(trackColor);
+ float g2=green(trackColor);
+ float b2=blue(trackColor);
+ float diff=dist(r1,g1,b1,r2,g2,b2);
+ 
+ //wherever the target color is:
+ if (diff<dist){
+ dist=diff;
+ locX=x;
+ locY=y;
+ }
+ 
+ totoroXleft = map(locX,0,1280,470,542);
+ totoroYleft = map(locY,0,800,369,414);
+ 
+ totoroXright = map(locX,0,1280,815,880);
+ totoroYright = map(locY,0,800,366,430);
+ 
+ 
+ 
+ }
+ }
+ video.updatePixels();
+ pushMatrix();
+ translate(width,0);
+ scale(-1,1);
+ image(video,0,0);
+ popMatrix();
+ 
+ 
+ //changing the animation frames
+ if (0 <= locX && locX <= 203 && 650 <= locY && locY <= 1280 || 1104 <= locX && locX <= 1280 && 652 <= locY && locY <= 800){
+ image(frame1, 70, -10);
+ }
+ else if (0 <= locX && locX <= 290 && 561 <= locY && locY <= 649 || 1036 <= locX && locX <= 1280 && 562 <= locY && locY <= 651){
+ image(frame2, 70, -10);
+ }
+ else if (0 <= locX && locX <= 349 && 429 <= locY && locY <= 560|| 964 <= locX && locX <= 1280 && 431 <= locY && locY <= 561){
+ image(frame3, 70, -10);
+ }
+ else if (0 <= locX && locX <= 418 && 324 <= locY && locY <= 428|| 904 <= locX && locX <= 1280 && 328 <= locY && locY <= 430){
+ image(frame4, 70, -10);
+ }
+ else if (0 <= locX && locX <= 475 && 198 <= locY && locY <= 323|| 856 <= locX && locX <= 1280 && 204 <= locY && locY <= 429){
+ image(frame5, 70, -10);
+ }
+ else if (201 <= locX && locX <= 312 && 0 <= locY && locY <= 197|| 1025 <= locX && locX <= 1140 && 0 <= locY && locY <= 203){
+ image(frame6, 70, -10);
+ }
+ else if (312 <= locX && locX <= 579 && 0 <= locY && locY <= 197|| 871 <= locX && locX <= 1024 && 0 <= locY && locY <= 203){
+ image(frame7, 70, -10);
+ }
+ else if(580 <= locX && locX <= 889 && 0<= locY && locY <= 239){
+ image(frame8, 70, -10);
+ }
+ else{
+ image(frame1, 70, -10);
+ }
+ 
+ //Totoro's eyes 
+ fill(0);
+ ellipse(totoroXleft,totoroYleft,30,30);
+ fill(0);
+ ellipse(totoroXright,totoroYright,30,30);
+}
+
+//Getting a tracking value
+void mousePressed(){
+ int loc=(video.width-mouseX-1)+(mouseY*width);
+ trackColor=video.pixels[loc];
+}
